@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Memorizer</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_update">Create/Update database</string>
+    <string name="action_delete">Delete database</string>
     <string name="button_next">Next</string>
 </resources>
