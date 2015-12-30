@@ -24,6 +24,9 @@ public class GeneratorActivity extends ActionBarActivity {
 
     ImageView imageView;
     SQLiteDatabase db;
+    Cursor cursor_ordered;
+    Cursor cursor_random;
+    String output, comments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +34,15 @@ public class GeneratorActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
         imageView = (ImageView) this.findViewById(R.id.imageView);
         db = this.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
-        db.execSQL("drop table if exists table1");
-        db.execSQL("create table if not exists table1 (id integer primary key autoincrement, input blob not null, output text)");
+        db.execSQL("create table if not exists table1 (id integer primary key autoincrement, input blob not null, output text not null, comments text)");
+        cursor_ordered = db.rawQuery("select * from table1", null);
+        cursor_random = db.rawQuery("select * from table1 order by random()", null);
     }
 
     public void updateDatabase() {
         File directory = new File(Environment.getExternalStorageDirectory().getAbsoluteFile() + "/memorizer");
         File[] files = directory.listFiles();
 
-        //int i = 1;
         try {
             for(File f : files) {
                 FileInputStream fis = new FileInputStream(f);
@@ -47,27 +50,56 @@ public class GeneratorActivity extends ActionBarActivity {
                 fis.read(image);
 
                 ContentValues values = new ContentValues();
-                //values.put("id", String.valueOf(i));
                 values.put("input", image);
-                values.put("output", "0451");
+
+                String name = f.getName();
+                String id_rest[] = name.split("_");
+                int id = Integer.valueOf(id_rest[0]);
+                values.put("id", id);
+
+                int pos = id_rest[1].lastIndexOf(".");
+                if (pos > 0) {
+                    id_rest[1] = id_rest[1].substring(0, pos);
+                }
+
+                pos = id_rest[1].lastIndexOf("-");
+                if (pos > 0) {
+                    values.put("comments", id_rest[1].substring(0, pos));
+                    values.put("output", id_rest[1].substring(pos+1));
+                } else {
+                    values.put("output", id_rest[1]);
+                }
+
                 db.insert("table1", null, values);
 
                 fis.close();
-                //i++;
             }
         } catch(IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        cursor_ordered = db.rawQuery("select * from table1", null);
         Toast.makeText(this, "Saving completed", Toast.LENGTH_SHORT).show();
     }
 
     public void loadRandomImage(View view) {
-        Cursor c = db.rawQuery("select * from table1 order by random() limit 1", null);
-        if (c.moveToNext()) {
-            byte[] image = c.getBlob(1);
+        if (cursor_random.moveToNext()) {
+            byte[] image = cursor_random.getBlob(1);
             Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
             imageView.setImageBitmap(bmp);
+            output = cursor_random.getString(2);
+            comments = cursor_random.getString(3);
+            if (comments != null) comments = comments.replace("-", "\n");
+        }
+    }
+
+    public void loadNextImage(View view) {
+        if (cursor_ordered.moveToNext()) {
+            byte[] image = cursor_ordered.getBlob(1);
+            Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
+            imageView.setImageBitmap(bmp);
+            output = cursor_ordered.getString(2);
+            comments = cursor_ordered.getString(3);
+            if (comments != null) comments = comments.replace("-", "\n");
         }
     }
 
