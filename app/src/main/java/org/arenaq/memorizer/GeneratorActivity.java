@@ -1,7 +1,9 @@
 package org.arenaq.memorizer;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -33,6 +35,30 @@ public class GeneratorActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = (ImageView) this.findViewById(R.id.imageView);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO change dialog to something editable (picker, custom layout,...) - or figure out how to get user's input
+                AlertDialog.Builder builder = new AlertDialog.Builder(GeneratorActivity.this);
+                builder.setTitle(R.string.dialog_answer_title)
+                        // TODO comment following one line
+                        .setMessage(output)
+                        .setPositiveButton(R.string.dialog_answer_positive, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // TODO check whether the answer is correct
+                            }
+                        })
+                        .setNegativeButton(R.string.dialog_answer_negative, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AlertDialog.Builder builder2 = new AlertDialog.Builder(GeneratorActivity.this);
+                                builder2.setTitle(R.string.dialog_answer_negative_title)
+                                        .setMessage(output);
+                                builder2.create().show();
+                            }
+                        });
+                builder.create().show();
+            }
+        });
         db = this.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
         db.execSQL("create table if not exists table1 (id integer primary key autoincrement, input blob not null, output text not null, comments text)");
         cursor_ordered = db.rawQuery("select * from table1", null);
