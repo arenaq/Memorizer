@@ -40,8 +40,6 @@ public class GeneratorActivity extends ActionBarActivity {
                 // TODO change dialog to something editable (picker, custom layout,...) - or figure out how to get user's input
                 AlertDialog.Builder builder = new AlertDialog.Builder(GeneratorActivity.this);
                 builder.setTitle(R.string.dialog_answer_title)
-                        // TODO comment following one line
-                        .setMessage(output)
                         .setPositiveButton(R.string.dialog_answer_positive, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // TODO check whether the answer is correct
@@ -56,6 +54,18 @@ public class GeneratorActivity extends ActionBarActivity {
                             }
                         });
                 builder.create().show();
+                // show hint
+                builder = new AlertDialog.Builder(GeneratorActivity.this);
+                if (comments != null) {
+                    builder.setTitle("Hint")
+                            .setMessage(comments)
+                            .setPositiveButton(R.string.dialog_answer_positive, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    ;
+                                }
+                            });
+                    builder.create().show();
+                }
             }
         });
         db = this.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
