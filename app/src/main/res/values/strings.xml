@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Memorizer</string>
+
+    <string name="dialog_answer_title">What is the answer?</string>
+    <string name="dialog_answer_positive">Ok</string>
+    <string name="dialog_answer_negative">Can\'t remember!</string>
+    <string name="dialog_answer_negative_title">You can\'t what?! Don\'t you dare to show your face before me.</string>
+    <string name="action_update">Create/Update database</string>
+    <string name="action_delete">Delete database</string>
+    <string name="button_next">Next</string>
+    <string name="button_random">Random</string>
+</resources>
