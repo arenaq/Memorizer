@@ -27,7 +27,6 @@ public class GeneratorActivity extends ActionBarActivity {
     ImageView imageView;
     SQLiteDatabase db;
     Cursor cursor_ordered;
-    Cursor cursor_random;
     String output, comments;
 
     @Override
@@ -62,7 +61,6 @@ public class GeneratorActivity extends ActionBarActivity {
         db = this.openOrCreateDatabase("test.db", Context.MODE_PRIVATE, null);
         db.execSQL("create table if not exists table1 (id integer primary key autoincrement, input blob not null, output text not null, comments text)");
         cursor_ordered = db.rawQuery("select * from table1", null);
-        cursor_random = db.rawQuery("select * from table1 order by random()", null);
     }
 
     public void updateDatabase() {
@@ -108,6 +106,7 @@ public class GeneratorActivity extends ActionBarActivity {
     }
 
     public void loadRandomImage(View view) {
+        Cursor cursor_random = db.rawQuery("select * from table1 order by random() limit 1", null);
         if (cursor_random.moveToNext()) {
             byte[] image = cursor_random.getBlob(1);
             Bitmap bmp = BitmapFactory.decodeByteArray(image, 0, image.length);
